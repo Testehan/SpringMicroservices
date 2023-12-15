@@ -1,0 +1,16 @@
+services:
+  postgres:
+    container_name: postgres_microservices
+    image: postgres
+    environment:
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+
+volumes:
+  postgres:
