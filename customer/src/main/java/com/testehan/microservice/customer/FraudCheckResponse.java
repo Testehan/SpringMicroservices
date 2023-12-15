@@ -1,4 +1,4 @@
-package com.testehan.microservice.fraud;
+package com.testehan.microservice.customer;
 
 public record FraudCheckResponse(Boolean isFraudster) {
 }
