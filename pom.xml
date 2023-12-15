@@ -10,8 +10,9 @@
   <name>spring-microservices</name>
   <url>http://maven.apache.org</url>
   <modules>
-    <module>customer</module>
+    <module>microservices-customer</module>
     <module>microservices-fraud</module>
+    <module>microservices-eureka-server</module>
   </modules>
 
   <properties>
@@ -19,7 +20,9 @@
 
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
+
     <spring.boot.dependencies.version>3.2.0</spring.boot.dependencies.version>
+    <spring-cloud.version>2023.0.0</spring-cloud.version>
   </properties>
 
   <!-- basically this is our own spring boot parent..and we ca thus access all the dependencies from it -->
@@ -35,6 +38,15 @@
         section. It indicates the dependency is to be replaced with the effective list of dependencies
         in the specified POM's <dependencyManagement> section." -->
       </dependency>
+
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
