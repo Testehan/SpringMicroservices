@@ -5,3 +5,70 @@ Microservices and Distributed Systems
 
     you can create a banner for your spring app here:
         https://devops.datenkollektiv.de/banner.txt/index.html
+
+To start docker:
+     docker compose up -d      (-d for detached)
+
+
+1. Generally, ideally, each microservice has its own database. Since we are in developing mode,
+   and our laptop resources are limited, I will use the same container, with multiple DBs
+   instead of having one DB per container.
+   https://stackoverflow.com/questions/57421950/why-does-each-microservice-get-its-own-database
+
+2. Since we use lombok, in each bean, like service, controller etc, if we annotate it with
+    @AllArgsConstructor, then a constructor will be generated behind the scenes with all fields.
+    And by having this, spring will know to search for those fields, so tha they will be injected.
+    If we wouldn't use the annotation, we could manually create the constructors, or use
+    @Autowired.
+
+3. @Slf4j is a lombok annotation that adds a logger field to your class
+
+4. why saveAndFlush is needed in some scenarios like the one used in CustomerService:
+    https://www.baeldung.com/spring-data-jpa-save-saveandflush
+
+5. http://localhost:8761/
+    to see the webconsole of eureka server ... this is of course after running the EurekaServerApplication
+
+6. Eureka version 4.0.0 onwards, which is being used in Spring Cloud 2022.0.0, you do not need to explicitly register
+   using the annotation @EnableEurekaClient It automatically gets registered as client if
+   spring-cloud-starter-netflix-eureka-client is on the class path. As per the - documentation
+        By having spring-cloud-starter-netflix-eureka-client on the classpath, your application
+        automatically registers with the Eureka Server. Configuration is required to locate the Eureka server
+
+7. "http://FRAUD/api/v1/fraud-check/{customerId}"
+    Means that eureka must be running...if you open console (see point 5) you will see there that application
+    name FRAUD has an address corresponding to it, which will be used instead of FRAUD
+
+8. @LoadBalanced tells spring that the request being made can go to any of the registered eureka apps
+    (for example the one from CustomerConfig, when used with
+    "http://FRAUD:8081/api/v1/fraud-check/{customerId}") will go to any FRAUD app
+
+
+
+ TODO CONTINUE WITH LESSON lesson21
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
