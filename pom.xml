@@ -14,6 +14,7 @@
     <module>microservices-fraud</module>
     <module>microservices-eureka-server</module>
       <module>microservices-clients</module>
+    <module>microservices-notification</module>
   </modules>
 
   <properties>

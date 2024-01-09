@@ -39,13 +39,27 @@ To start docker:
     Means that eureka must be running...if you open console (see point 5) you will see there that application
     name FRAUD has an address corresponding to it, which will be used instead of FRAUD
 
+    // one way of calling the fraud microservice
+            FraudCheckResponse fraudCheckResponse = restTemplate.getForObject(
+                    "http://FRAUD:8081/api/v1/fraud-check/{customerId}",
+                    FraudCheckResponse.class,
+                    customer.getId()
+                    );
+
 8. @LoadBalanced tells spring that the request being made can go to any of the registered eureka apps
     (for example the one from CustomerConfig, when used with
     "http://FRAUD:8081/api/v1/fraud-check/{customerId}") will go to any FRAUD app
 
+9. Concerning the @FeignClient annotation
+    https://docs.spring.io/spring-cloud-openfeign/reference/spring-cloud-openfeign.html
 
-
- TODO CONTINUE WITH LESSON lesson21
+    "In the @FeignClient annotation the String value ("stores" above) is an arbitrary client name,
+    which is used to create a Spring Cloud LoadBalancer client. You can also specify a URL using the
+    url attribute (absolute value or just a hostname). The name of the bean in the application context is the fully
+    qualified name of the interface.
+  !!!    The load-balancer client above will want to discover the physical addresses for the "stores" service. If your
+    application is a Eureka client then it will resolve the service in the Eureka service registry.
+        Dan: this last sentence it why we can just specify "FRAUD" in the annotation
 
 
 
