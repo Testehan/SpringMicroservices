@@ -1,6 +1,6 @@
 package com.testehan.microservice.notification;
 
-import com.testehan.clients.notification.NotificationRequest;
+import com.testehan.microservice.clients.notification.NotificationRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,4 +1,4 @@
-package com.testehan.clients.notification;
+package com.testehan.microservice.clients.notification;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;

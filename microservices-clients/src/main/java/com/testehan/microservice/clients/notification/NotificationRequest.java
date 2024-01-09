@@ -1,4 +1,4 @@
-package com.testehan.clients.notification;
+package com.testehan.microservice.clients.notification;
 
 public record NotificationRequest(Integer toCustomerId, String toCustomerEmail, String message) {
 }

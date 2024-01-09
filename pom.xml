@@ -16,6 +16,7 @@
       <module>microservices-clients</module>
     <module>microservices-notification</module>
     <module>microservices-api-gateway</module>
+      <module>microservices-message-queue</module>
   </modules>
 
   <properties>

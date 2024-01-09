@@ -17,6 +17,9 @@ spring:
       ddl-auto: create-drop
     show-sql: 'true'
 
+  rabbitmq:
+    addresses: localhost:5672
+
 eureka:
   client:
     service-url:

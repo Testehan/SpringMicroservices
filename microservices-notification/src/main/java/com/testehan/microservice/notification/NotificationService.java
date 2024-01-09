@@ -1,6 +1,6 @@
 package com.testehan.microservice.notification;
 
-import com.testehan.clients.notification.NotificationRequest;
+import com.testehan.microservice.clients.notification.NotificationRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

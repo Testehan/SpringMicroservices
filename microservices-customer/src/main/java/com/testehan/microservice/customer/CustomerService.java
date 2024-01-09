@@ -1,9 +1,10 @@
 package com.testehan.microservice.customer;
 
-import com.testehan.clients.fraud.FraudCheckResponse;
-import com.testehan.clients.fraud.FraudClient;
-import com.testehan.clients.notification.NotificationClient;
-import com.testehan.clients.notification.NotificationRequest;
+import com.testehan.microservice.amqp.RabbitMQMessageProducer;
+import com.testehan.microservice.clients.fraud.FraudCheckResponse;
+import com.testehan.microservice.clients.fraud.FraudClient;
+import com.testehan.microservice.clients.notification.NotificationClient;
+import com.testehan.microservice.clients.notification.NotificationRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,6 +18,7 @@ public class CustomerService {
 
     private final FraudClient fraudClient;
     private final NotificationClient notificationClient;
+    private final RabbitMQMessageProducer rabbitMQMessageProducer;
 
     public void registerCustomer(CustomerRegistrationRequest customerRequest) {
         var customer = Customer.builder()
@@ -40,9 +42,14 @@ public class CustomerService {
         if (fraudCheckResponse.isFraudster()){
             throw new IllegalStateException("fraudster");
         }
-        // todo make it async i.e. add to queue
-        notificationClient.sendNotification(
-                new NotificationRequest(customer.getId(),customer.getEmail(),
-                        String.format("Hi %s, welcome to DanTe...",customer.getFirstName())));
+
+        NotificationRequest notificationRequest = new NotificationRequest(customer.getId(), customer.getEmail(),
+                String.format("Hi %s, welcome to DanTe...", customer.getFirstName()));
+
+        // below is the old approach of doing the operation synchronously
+        //notificationClient.sendNotification(notificationRequest);
+
+        // this is doing things Asynchronously
+        rabbitMQMessageProducer.publish(notificationRequest,"internal.exchange","internal.notification.routing-key");
     }
 }

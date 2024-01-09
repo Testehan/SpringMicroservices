@@ -1,4 +1,4 @@
-package com.testehan.apigateway;
+package com.testehan.microservice.apigateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

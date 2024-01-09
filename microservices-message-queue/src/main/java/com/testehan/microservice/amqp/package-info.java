@@ -1,0 +1,1 @@
+// amqp comes from "advanced message queue protocol"

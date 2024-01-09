@@ -1,6 +1,6 @@
 package com.testehan.microservice.fraud;
 
-import com.testehan.clients.fraud.FraudCheckResponse;
+import com.testehan.microservice.clients.fraud.FraudCheckResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;

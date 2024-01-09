@@ -4,9 +4,15 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@SpringBootApplication
+@SpringBootApplication(
+        scanBasePackages = {
+                "com.testehan.microservice.customer",
+                "com.testehan.microservice.amqp",
+                "com.testehan.microservice.clients.fraud"
+        }
+)
 @EnableFeignClients(
-        basePackages = "com.testehan.clients"
+        basePackages = "com.testehan.microservice.clients"
 )
 public class CustomerApplication
 {
