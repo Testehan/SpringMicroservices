@@ -49,6 +49,7 @@ public class CustomerService {
         // below is the old approach of doing the operation synchronously
         //notificationClient.sendNotification(notificationRequest);
 
+        // TODO Take values from config, don't use them hardcoded
         // this is doing things Asynchronously
         rabbitMQMessageProducer.publish(notificationRequest,"internal.exchange","internal.notification.routing-key");
     }
