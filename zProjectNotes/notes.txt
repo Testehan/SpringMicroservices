@@ -61,6 +61,128 @@ To start docker:
     application is a Eureka client then it will resolve the service in the Eureka service registry.
         Dan: this last sentence it why we can just specify "FRAUD" in the annotation
 
+10. Concerning tracing ...sleuth (which is used in the lessons) is discontinued for this version of spring boot.
+    Replacing it is micrometer..
+    Used the below link to understand how to do things mentioned in tutorial with micrometer
+    https://openvalue.blog/posts/2022/12/16/tracing-in-spring-boot-2-and-3/
+
+    !!! TODO I could not make it work :( ...maybe have a look over the SpringBootObservability, and use
+    actuator and micrometer to get info in zipkin..
+
+11. Concerning the LoadBalancer (API Gteway)...normally you would use the load balancer offered by Google,
+    AWS etc...you will not create/configure one on your own machine...
+
+12. Microservices should not be exposed to the open internet directly...they are usually protected by a firewall.
+    Instead, all trafic goes through the load balancer. Which means that if up until now we made a request to
+    the Customers microservice directly, http://localhost:8080/api/v1/customers, now we will go through
+    the load balancer by using http://localhost:8083/api/v1/customers
+
+13. We will use a message broker, Rabbit MQ, in order to handle the sending of notification. Right now, as the code is
+    if for some reason, notification microservice takes 10s to process a request, then this will be a very bad
+    user experience for the user. Since a notification like getting an email/SMS does not have to be instantaneous,
+    the communication with the notification microservice will be done with a message broker....in this case
+    Rabbit MQ.
+
+14. When defining the Rabbit MQ, we specify 2 lines of ports, because some are for the microservices to connect to,
+    while the second is for management port, so that you can use the management console.
+              - "5672:5672"
+              - "15672:15672"
+
+15. For RabbitMQ UI console visit http://localhost:15672/. username and pass are guest/guest
+
+16.  <artifactId>spring-boot-starter-amqp</artifactId>
+        amqp comes from -> advanced message queue protocol
+
+17. RabbitTemplate allows us to send messages
+    SimpleRabbitListenerContainerFactory    allows us to receive messages from the queue
+
+18. http://localhost:15672/ after all is setup, and you run the Eureka server and the Notification
+    microservice (having a commandLineRunner in the application class that sends a message), if you
+    go to Queues, and then click on Get Messages through the UI, you should be able to see the payload
+    sent from the commandLineRunner
+
+19. You can run the microservices from terminal by using the command (run this after you ran mvn package command)
+    java -jar name_of_jar.jar
+
+20. We will use Jib to create the docker images of our app
+    https://github.com/GoogleContainerTools/jib
+
+    In main pom we defined property that is used to create the image name. The first part
+    "teshte" MUST be your docker hub username !!!
+        <!-- this is used by Jib maven plugin to set the image version -->
+        <image>teshte/${project.artifactId}:${project.version}</image>
+
+     <!-- below plugin is used to create docker images -->
+            <plugin>
+              <groupId>com.google.cloud.tools</groupId>
+              <artifactId>jib-maven-plugin</artifactId>
+              <version>3.4.0</version>
+              <configuration>
+                <from>
+                    <!-- this is the so called based image -->
+                  <image>eclipse-temurin:17</image>
+                </from>
+                <to>
+                  <tags>
+                    <tag>latest</tag>
+                  </tags>
+                </to>
+              </configuration>
+            </plugin>
+
+
+    Together with the definitions like the one from below that are in the microservice modules
+        <profiles>
+                <profile>
+                    <id>build-docker-image</id>
+                    <build>
+                        <plugins>
+                            <plugin>
+                                <groupId>com.google.cloud.tools</groupId>
+                                <artifactId>jib-maven-plugin</artifactId>
+                                <executions>
+                                    <execution>
+                                        <phase>package</phase>
+                                        <!-- goal from below will push our image to docker registry -->
+                                        <goals>
+                                            <goal>build</goal>
+                                        </goals>
+                                    </execution>
+                                </executions>
+                            </plugin>
+                        </plugins>
+                    </build>
+                </profile>
+            </profiles>
+
+21. So to create and publish the image of a microservice on docker hub, select the profile
+    "build-docker-image" and then run the "package" phase...(since you are logged in to docker
+    hub because of the instalation/setup that i did some time ago)
+        in case you get errors because of login issues, look for "docker login" and
+        "docker logout" commands..
+
+    You can run the "package" phase on a microservice module, like api-gateway, customer,
+    fraud,notification, eureka-server, which will build and publish just the image of
+    that microservice to docker hub, or just run it on the main, parent project, in which
+    case all microservices docker images will be built and pushed to docker hub.
+
+
+TODO ramas la
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
