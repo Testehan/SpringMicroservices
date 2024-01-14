@@ -167,7 +167,153 @@ To start docker:
     case all microservices docker images will be built and pushed to docker hub.
 
 
-TODO ramas la
+22. In docker-compose.yml we will add the services for each microservice... Notice that we need to put
+        networks:
+          - spring
+    because we want the microservices to be able to communicate with each other
+
+22. application-docker.yml are files that will be used when the "docker" spring profile is activated
+    instead of localhost...these files have the name of the container in URLs...because since each
+    microservice has its own container, it would not work with "localhost"
+
+23. After you have your docker microservices set up, you can run from the parent folder the command
+        docker compose up -d
+    to start up all the services defined in docker-compose
+        docker compose stop
+    to stop all containers
+
+24. Kubernetes aka K8S (8 comes from the number of letters between K and S) is an application
+    orchestrator...and by application we mean container here
+
+    master nodes - the brain
+                 - this has several components:
+                    -API server - this enabled communication between the below components, system administrator etc
+                    -Scheduler
+                    -Cluster store - where the configuration/data is stored
+                    -Cloud Controller Manager - used to communicate with the cloud providers (AWS, Azzure, Google cloud)
+                    -Controller manager
+    worked nodes - nodes where the actual work of the app is done, the microservice nodes
+                 - VM or physical machine running linux
+                 - 3 main components:
+                    -Kublet - main agent that runs on every node; recieves Pod definitions from master node's API server
+                            - reports Pod state to master node through API Server
+                            - interacts with Container Runtime to run containers associated with the Pod
+                    -Container runtime - pulls images from container registries, like Docker Hub etc
+                                       - starts and stops containers
+                                       - CRI - container runtime interface - interface for 3rd party container runtime ..
+                                            this is because kubernetes deprecated docker, and instead uses Containerd, which
+                                            is the standard container runtime for kubernetes
+                    -Kube proxy - responsible for each node getting its own unique IP address...and other things :)
+
+    https://containerd.io/
+    https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/
+
+25. Running kubernetes is possible in 2 ways:
+    1. run it yourself...which is very hard.. with solutions such as miniKube, kind, docker
+            https://minikube.sigs.k8s.io/docs/start/
+    2.managed kubernetes...using the AWS...Google etc infrastructure
+        by managed it means that you as a dev, don't need to worry about running all the master node components, like
+        API server, Scheduler etc...and you can just focus on the worker nodes
+
+26. We will use miniKube to run kubernetes locally. Some useful commands:
+    brew install minikube       - to install
+    minikube version            - to see installed version
+    minikube start --memory=4g  - to start minikube with 4 gb of RAM
+    minikube status
+    minikube ip                 - ip of master node
+
+27. Kubectl - Kubernetes command line tool...lets us interact with the kubernetes cluster
+
+28. A Pod is a collection of 1 or more containers (in the context of kubernetes)
+        - a Pod is the smallest deployable unit in kubernetes...in docker the smallest deployable unit is a container
+        - never create pods on its own..use controllers instead...because pods are disposable and
+        temporal...meaning they should be controlled/managed from one place, not chaotically
+
+29. Minikube kubectl commands part 1
+    kubectl run hello-world --image=amigoscode/kubernetes:hello-world --port=80         Run a Pod in kubernetes
+    kubectl get pods
+    kubectl port-forward pod/hello-world 8080:80            - need this port forwarding so that we can access the pod from local machine..
+                                                            - this is not something to be used in production...in production we use Services
+                                                            to access the Pods
+    kubectl delete pod hello-world                          - deletes a pod
+
+30. Types of Kubernetes Services:
+        ClusterIP (default)
+        NodePort
+        ExternalName
+        LoadBalancer
+
+31. !!!!!!!
+    In production you should never deploy your DB in kubernetes in production...Sure, locally you can do.
+    In production you should use a managed solution/database like Amazon Relational Database Service (RDS)..or from
+    Google/Azzure
+
+32. In /spring-microservices/kubernetes/minikube/bootstrap/postgres/volume.yml
+    we specify how postgres will store data into our minikube node
+
+    In spring-microservices/kubernetes/minikube/bootstrap/postgres/configmap.yml
+    we specify the postgres config like user password DB name
+    spring-microservices-db ...is just a dummy DB name. Since each microservice will have its own
+    DB, these will be created manually...see point 33
+
+    In spring-microservices/kubernetes/minikube/bootstrap/postgres/service.yml
+    we specify how other Pods communicate with postgres
+
+    In spring-microservices/kubernetes/minikube/bootstrap/postgres/statefulset.yml
+    is needed to instantiate the instance
+        the part
+                      envFrom:
+                        - configMapRef:
+                            name: postgres-config
+        means that configuration name is postgres-config which is present in configmap.yml and
+        contains username password DB name
+
+33. Minikube kubectl commands part 2
+        kubectl apply -f bootstrap/postgres/            to create a Pod from your files..you run this from minikube folder
+        kubectl get pods -w                             get status of local pods. you will see a column NAME, where the service
+                                                        names are present...if you take the service name from there, you can
+                                                        use the following command
+
+        minikube service --url rabbitmq                 rabbitmq comes from previous command...this will output some URLs
+                                                        that you can use to access the service running inside kubernetes. You
+                                                        need to keep this command running, in order to access the service ..
+                                                        this is mentioned in the result of the command
+
+        kubectl get all                                 more information about local pods
+        kubectl describe pod postgres-0                 gives more info about the Pod with that name
+        kubectl logs postgres-0                         logs from Pod
+        minikube ssh                                    gets you a terminal inside minikube
+        kubectl exec -it postgres-0 -- psql -U postgres         connect to the postgres database server inside the Pod
+                                                                if you execute \l you will see existing databases
+                !!! from this terminal, we manually created the DBs:
+                    create database customer;
+                    create database fraud;
+                    create database notification;
+
+34. File from spring-microservices/kubernetes/minikube/bootstrap/rabbitmq
+    were taken as they were...no explanation on that
+    same thing for zipkin files
+
+35. !!!! We no longer need Eureka Server for Service discovery, because kubernetes offers us that for free.
+    So we disabled eureka server from the application.yml files, by mentioning the property
+        enabled: false
+    So obviously you can also delete the module, and the eureka related annotations, but we should leave those
+    cause we might still want to run the app the old way.
+TODO    !!!! kEEP in mind to remove the "enabled: false" mentioned above in that case !!!
+
+36. Related to point 35, 2 new config files were added, clients-default.properties and
+    clients-kube.properties, which depending on the spring profile set, enable those services
+    to be accesed at various URLS. Check FraudClient and NotificationClient..you will see the
+    configurable url there.
+        Needed to add "SPRING_PROFILES_ACTIVE=default" to environment variables of the intellij
+        application runners..
+    Next if we comment out the services from docker-compose, and start just the 3 infrastructure
+    containers, zipkin, postgres, rabbit mq, and run the apps from run configuration, they should
+    still work.
+TODO    Keep in mind that if you want to start the app, having each microservice in a docker container,
+        you need to uncomment the services from docker-compose.yml
+
+TODO ramas la lesson88
 
 
 
