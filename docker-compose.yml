@@ -54,50 +54,50 @@ services:
 #    depends_on:
 #      - eureka-server
 #
-#  customer:
-#    image: teshte/microservices-customer:latest
-#    container_name: customer
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
-#    networks:
-#      - spring
-#      - postgres
-#    depends_on:
+  customer:
+    image: teshte/microservices-customer:latest
+    container_name: customer
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+      - postgres
+    depends_on:
 #      - eureka-server
-#      - postgres
-#      - rabbitmq
-#
-#  fraud:
-#    image: teshte/microservices-fraud:latest
-#    container_name: fraud
-#    ports:
-#      - "8081:8081"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
-#    networks:
-#      - spring
-#      - postgres
-#    depends_on:
+      - postgres
+      - rabbitmq
+
+  fraud:
+    image: teshte/microservices-fraud:latest
+    container_name: fraud
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+      - postgres
+    depends_on:
 #      - eureka-server
-#      - postgres
-#      - rabbitmq
-#
-#  notification:
-#    image: teshte/microservices-notification:latest
-#    container_name: notification
-#    ports:
-#      - "8082:8082"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
-#    networks:
-#      - spring
-#      - postgres
-#    depends_on:
+      - postgres
+      - rabbitmq
+
+  notification:
+    image: teshte/microservices-notification:latest
+    container_name: notification
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+      - postgres
+    depends_on:
 #      - eureka-server
-#      - postgres
-#      - rabbitmq
+      - postgres
+      - rabbitmq
 
 networks:
   postgres:
