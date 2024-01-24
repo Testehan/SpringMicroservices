@@ -219,6 +219,7 @@ To start docker:
     brew install minikube       - to install
     minikube version            - to see installed version
     minikube start --memory=4g  - to start minikube with 4 gb of RAM
+    minikube stop               - obviously stops
     minikube status
     minikube ip                 - ip of master node
 
@@ -290,6 +291,16 @@ To start docker:
                     create database fraud;
                     create database notification;
 
+        kubectl describe pod customer-8f9b7ffcd-qsn4        information about a pod
+        kubectl scale --replicas=0 deployment customer      this will make 0 replicas for customer pods..meaning you will not have any customer running after
+        kubectl get svc                                     get the existing running services from kuberneted...the fraud and
+                                                            notification having NodePort as TYPE means that they are only accesible
+                                                            from another service inside kubernetes network...while customer is accesible from outside,
+                                                            because its type is LoadBalancer
+
+        minikube tunnel                                     so that you can access the accessible services from kubernetes;
+                                                            you need to provide admin password for this
+
 34. File from spring-microservices/kubernetes/minikube/bootstrap/rabbitmq
     were taken as they were...no explanation on that
     same thing for zipkin files
@@ -313,7 +324,36 @@ TODO    !!!! kEEP in mind to remove the "enabled: false" mentioned above in that
 TODO    Keep in mind that if you want to start the app, having each microservice in a docker container,
         you need to uncomment the services from docker-compose.yml
 
-TODO ramas la lesson88
+37. Kafka - distributed streaming platform
+          - real time event driven application
+          - fault tolerant, scalable,
+
+          - difference between kafka and Rabbit MQ ? in kafka messages can stay "alive" for a minute,
+          hour, day or forever, while in Rabbit MQ they dissapear after being consumed.
+
+    (check kafka.png diagram)
+38. Kafka connect source - pulls data from data sources into kafka
+    Kafka connect sinks - takes data from kafka topics and puts it in your data source
+    Kafka streams - used for data transformation, enriching, filtering, grouping, aggregating etc
+                  - data goes both ways
+
+39. Kafka can be obtaine from https://kafka.apache.org/quickstart
+    I have it here : /Users/danteshte/Applications
+
+    1.To start it, go inside the folder and run
+        bin/zookeeper-server-start.sh config/zookeeper.properties
+    2.From another command prompt, run
+        bin/kafka-server-start.sh config/server.properties
+    3.If you want to run in command prompt a kafka consumer, you can run :
+        bin/kafka-console-consumer.sh --topic dante --from-beginning --bootstrap-server localhost:9092
+
+    4. Run "spring-kafka" project ...and send request from postman to http://localhost:8080/api/v1/messages
+    In my "spring-kafka" project, there is an exmple of a simple REST endpoint, that produces a message,
+    publishes it on a kafka topic, and consumes it...this is done by running kafka locally like
+    mentioned above
+    In production one would use a "managed kafka"...cloud hosted one like AWS offers this..
+
+
 
 
 
