@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: fraud
+  name: notification
 spec:
   selector:
-    app: fraud
+    app: notification
   ports:
     - port: 80
-      targetPort: 8081
-  type: LoadBalancer
+      targetPort: 8082
+  type: NodePort

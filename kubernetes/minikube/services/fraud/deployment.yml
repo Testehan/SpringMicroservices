@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: customer
+  name: fraud
   labels:
-    app: customer
+    app: fraud
 spec:
   replicas: 1
   template:
     metadata:
-      name: customer
+      name: fraud
       labels:
-        app: customer
+        app: fraud
     spec:
       containers:
-        - name: customer
-          image: teshte/microservices-customer:latest
+        - name: fraud
+          image: teshte/microservices-fraud:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 8081
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: kube
       restartPolicy: Always
   selector:
     matchLabels:
-      app: customer
+      app: fraud
